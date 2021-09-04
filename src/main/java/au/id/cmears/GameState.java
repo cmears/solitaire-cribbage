@@ -3,13 +3,10 @@ package au.id.cmears;
 import java.util.ArrayList;
 import java.util.Optional;
 
-class Card {
+record Card(int face) {
     // 1 = Ace, 11 = Jack, 12 = Queen, 13 = King
-    // "Face" is what's written on the card...
-    int face;
-    Card(int face) { this.face = face; }
-
-    // ... and "value" is what it contributes to the stack total.
+    // "Face" is what's written on the card,
+    // "value" is what it contributes to the stack total.
     int value() {
         if (face >= 10) {
             return 10;
@@ -23,7 +20,7 @@ class Card {
 // In each pile, the cards in order of play.
 // (That is, the cards[0][0] is the card at the bottom-left of screen.)
 class Deal {
-    Card[][] cards;
+    final Card[][] cards;
     Deal(int[] faces) {
         cards = new Card[4][13];
         int i = 0;
@@ -36,12 +33,9 @@ class Deal {
     }
 }
 
-class Move {
-    // Piles are numbered 0,1,2,3.
-    // -1 means "new stack".
-    int pile;
-    Move(int pile) { this.pile = pile; }
-}
+// Piles are numbered 0,1,2,3.
+// -1 means "new stack".
+record Move(int pile) { }
 
 public class GameState {
     // Every GameState can share the same Deal object.
@@ -80,9 +74,9 @@ public class GameState {
         if (stack.size() < n) return false;
 
         ArrayList<Card> sublist = new ArrayList<Card>(stack.subList(stack.size() - n, stack.size()));
-        sublist.sort((c1,c2) -> c2.face - c1.face);
+        sublist.sort((c1,c2) -> c2.face() - c1.face());
         for (int i = 1 ; i < sublist.size() ; i++) {
-            if (sublist.get(i).face != sublist.get(i-1).face + 1) {
+            if (sublist.get(i).face() != sublist.get(i-1).face() + 1) {
                 return false;
             }
         }
@@ -98,13 +92,13 @@ public class GameState {
         if (value == 15 || value == 31) score += 2;
 
         // Initial jack.
-        if (stack.size() == 1 && stack.get(0).face == 11) score += 2;
+        if (stack.size() == 1 && stack.get(0).face() == 11) score += 2;
 
         // 2/3/4 of a kind.
         int multiple = 1;
-        int lastFace = stack.get(stack.size()-1).face;
+        int lastFace = stack.get(stack.size()-1).face();
         for (int i = stack.size()-2 ; i >= 0 ; i--) {
-            if (stack.get(i).face != lastFace) break;
+            if (stack.get(i).face() != lastFace) break;
             multiple++;
         }
         switch (multiple) {
@@ -135,11 +129,11 @@ public class GameState {
         state.score = score;
         state.previousMove = move;
         state.previousState = this;
-        if (move.pile == -1) {
+        if (move.pile() == -1) {
             state.stack = new ArrayList<Card>();
         } else {
-            Card card = top(move.pile).get();
-            state.consumed[move.pile]++;
+            Card card = top(move.pile()).get();
+            state.consumed[move.pile()]++;
             state.stack = new ArrayList<Card>(stack);
             state.stack.add(card);
             state.updateScore();
@@ -163,7 +157,7 @@ public class GameState {
                     output += " ";
                 }
                 first = false;
-                output += s.previousMove.pile;
+                output += s.previousMove.pile();
             }
         }
         return output;
