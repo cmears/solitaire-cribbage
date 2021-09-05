@@ -24,13 +24,13 @@ public class Search {
     }
 
     // All the next "stack" moves from here.
-    ArrayList<GameState> stackMoves(GameState state) {
+    static ArrayList<GameState> stackMoves(GameState state) {
         assert(state.stack.isEmpty());
         ArrayList<GameState> moves = new ArrayList<GameState>();
         stackMoves2(state, moves);
         return moves;
     }
-    void stackMoves2(GameState state, ArrayList<GameState> moves) {
+    static void stackMoves2(GameState state, ArrayList<GameState> moves) {
         int value = state.stackValue();
         Boolean validPlay = false;
         for (int pile = 0 ; pile < 4 ; pile++) {

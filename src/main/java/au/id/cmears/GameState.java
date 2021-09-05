@@ -74,7 +74,7 @@ public class GameState {
         if (stack.size() < n) return false;
 
         ArrayList<Card> sublist = new ArrayList<Card>(stack.subList(stack.size() - n, stack.size()));
-        sublist.sort((c1,c2) -> c2.face() - c1.face());
+        sublist.sort((c1,c2) -> c1.face() - c2.face());
         for (int i = 1 ; i < sublist.size() ; i++) {
             if (sublist.get(i).face() != sublist.get(i-1).face() + 1) {
                 return false;
@@ -162,4 +162,22 @@ public class GameState {
         }
         return output;
     }
+
+    // Compute the path to this state, by following all the "previous" values as a linked list.
+    // Return a list of piles in order of play.
+    ArrayList<Integer> piles() {
+        ArrayList<GameState> history = new ArrayList<GameState>();
+        for (GameState s = this ; s != null ; s = s.previousState) {
+            history.add(s);
+        }
+        ArrayList<Integer> piles = new ArrayList<Integer>();
+        while (!history.isEmpty()) {
+            GameState s = history.remove(history.size()-1);
+            if (s.previousMove != null) {
+                piles.add(s.previousMove.pile());
+            }
+        }
+        return piles;
+    }
+
 }
