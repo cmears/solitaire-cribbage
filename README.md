@@ -1,0 +1,1 @@
+A solver for the solitaire cribbage game in Möbius Front '83.  Described further in this article: https://cmears.id.au/articles/mobius-front-solitaire-cribbage.html.
